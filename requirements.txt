@@ -1,0 +1,11 @@
+# Python dependencies for this lab.
+#
+# Ansible ships as a Python package, which is convenient: pip install it into a
+# virtualenv and the `ansible-playbook` binary lands on PATH inside that venv.
+# No system package manager, no sudo, nothing left behind on the Jenkins host.
+#
+# `ansible-core` is the engine plus the built-in modules (ansible.builtin.*).
+# The bigger `ansible` package adds thousands of community collections you
+# don't need yet. Start small.
+
+ansible-core>=2.16

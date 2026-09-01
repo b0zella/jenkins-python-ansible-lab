@@ -1,0 +1,22 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Build output - regenerated every run, no reason to version it
+output/
+
+# Ansible
+*.retry
+
+# Never commit keys. If you find yourself wanting to, that's the signal to move
+# them into Jenkins' credentials store instead.
+*.pem
+*.key
+id_rsa*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store

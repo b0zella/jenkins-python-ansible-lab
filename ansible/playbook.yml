@@ -1,0 +1,60 @@
+---
+# playbook.yml - deliberately boring. Four tasks, no sudo, no external roles.
+#
+# The goal here is to prove the chain works (Jenkins -> Python -> Ansible),
+# not to do anything impressive. Once this runs green, start replacing these
+# tasks with real ones: package updates, service restarts, config file drops.
+#
+# Run it directly:  ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+
+- name: Lab starter playbook
+  hosts: lab
+  gather_facts: true
+  become: false          # nothing here needs root yet; add it per-task later
+
+  vars:
+    lab_dir: /tmp/jenkins-lab
+
+  tasks:
+
+    # Facts are the values Ansible collects about the machine before it does
+    # anything. `gather_facts: true` above is what populates ansible_facts.
+    - name: Show what Ansible discovered about this host
+      ansible.builtin.debug:
+        msg: >-
+          {{ ansible_facts['distribution'] }}
+          {{ ansible_facts['distribution_version'] }}
+          on {{ ansible_facts['architecture'] }},
+          {{ ansible_facts['processor_vcpus'] | default('?') }} vCPU,
+          {{ (ansible_facts['memtotal_mb'] | default(0) / 1024) | round(1) }} GB RAM
+
+    # `file` with state: directory is idempotent -- run it a hundred times and
+    # it only reports "changed" the first time. That idempotence is the whole
+    # reason to use Ansible instead of a pile of shell commands.
+    - name: Make sure the lab directory exists
+      ansible.builtin.file:
+        path: "{{ lab_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Write a small marker file
+      ansible.builtin.copy:
+        dest: "{{ lab_dir }}/last-run.txt"
+        mode: "0644"
+        content: |
+          Last playbook run: {{ ansible_date_time.iso8601 }}
+          Host: {{ inventory_hostname }}
+          Managed by: jenkins-python-ansible-lab
+
+    # `command` is the escape hatch for when no proper module exists. Note the
+    # `changed_when: false` -- reading something never changes the system, and
+    # saying so keeps your "changed" count honest.
+    - name: Count how many files are in the lab directory
+      ansible.builtin.command:
+        cmd: "ls -1 {{ lab_dir }}"
+      register: lab_files
+      changed_when: false
+
+    - name: Report the count
+      ansible.builtin.debug:
+        msg: "{{ lab_dir }} now contains {{ lab_files.stdout_lines | length }} file(s)"
