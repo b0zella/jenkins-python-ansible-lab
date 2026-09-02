@@ -46,6 +46,10 @@
           Host: {{ inventory_hostname }}
           Managed by: jenkins-python-ansible-lab
 
+    - name: Print OS version
+      debug:
+      msg: "Running on {{ ansible_distribution }} {{ ansible_distribution_version }}"      
+
     # `command` is the escape hatch for when no proper module exists. Note the
     # `changed_when: false` -- reading something never changes the system, and
     # saying so keeps your "changed" count honest.
