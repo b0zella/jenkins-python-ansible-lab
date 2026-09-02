@@ -81,7 +81,7 @@ def run_command(label, command):
     try:
         result = subprocess.run(
             command,
-            capture_output=True,   # grab stdout/stderr instead of letting them fly past
+            capture_output=True,   # grab stdout/stderr instead of letting them fly past (standard output/error)
             text=True,             # give us str, not bytes
             cwd=REPO_ROOT,
         )
