@@ -1,6 +1,7 @@
 ---
 # playbook.yml - deliberately boring. Four tasks, no sudo, no external roles.
 #
+# changes will be made in the script - then pushed to GitLab - then Jenkins will monitor and run pipeline
 # The goal here is to prove the chain works (Jenkins -> Python -> Ansible),
 # not to do anything impressive. Once this runs green, start replacing these
 # tasks with real ones: package updates, service restarts, config file drops.
