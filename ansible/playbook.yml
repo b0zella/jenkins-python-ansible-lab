@@ -48,7 +48,7 @@
 
     - name: Print OS version
       debug:
-      msg: "Running on {{ ansible_distribution }} {{ ansible_distribution_version }}"      
+        msg: "Running on {{ ansible_distribution }} {{ ansible_distribution_version }}"      
 
     # `command` is the escape hatch for when no proper module exists. Note the
     # `changed_when: false` -- reading something never changes the system, and
