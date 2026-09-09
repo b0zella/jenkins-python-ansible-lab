@@ -9,7 +9,7 @@
 # Run it directly:  ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
 
 - name: Lab starter playbook
-  hosts: lab
+  hosts: oci_lab
   gather_facts: true
   become: false          # nothing here needs root yet; add it per-task later
 
@@ -38,6 +38,32 @@
         state: directory
         mode: "0755"
 
+    
+    - name: Count upgradable packages before patching
+      ansible.builtin.shell: "apt list --upgradable 2>/dev/null | tail -n +2 | wc -l"
+      register: before_count
+      changed_when: false
+
+
+    - name: Update apt package cache and update all packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+      become: true
+      register: patch_result
+
+    
+    - name: Count upgradable packages after patching
+      ansible.builtin.shell: "apt list --upgradable 2>/dev/null | tail -n +2 | wc -l"
+      register: after_count
+      changed_when: false
+
+    
+    - name: Report patch result
+      ansible.builtin.debug:
+        msg: "Patch run complete. Changed: {{ patch_result.changed }}. Upgradable packages before: {{ before_count.stdout }}, after: {{ after_count.stdout }}"
+    
+    
     - name: Write a small marker file
       ansible.builtin.copy:
         dest: "{{ lab_dir }}/last-run.txt"
